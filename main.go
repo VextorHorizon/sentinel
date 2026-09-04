@@ -1,9 +1,12 @@
 package main
 
 import (
-	"fmt"
+	"net" //net.Dial
 )
 
 func main() {
-	fmt.Println("Hello, Sentinel")
+
+	IPAddress := "127.0.0.1"
+
+	conn, err := net.Dial("tcp", IPAddress)
 }
