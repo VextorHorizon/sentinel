@@ -13,6 +13,12 @@ func main() {
 
 	address := ip + ":" + strconv.Itoa(port)
 
+	SetofIPAddress := []string{}
+
+	SetofIPAddress = append(SetofIPAddress, address)
+
+	fmt.Println(SetofIPAddress)
+
 	// Itoa = Integer to ASCII
 
 	// fmt.Println(address)
