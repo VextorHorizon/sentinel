@@ -14,7 +14,6 @@ type IPAddress struct {
 func main() {
 
 	target := IPAddress{ip: "127.0.0.1", port: 5354}
-
 	address := target.ip + ":" + strconv.Itoa(target.port)
 
 	// SetofIPAddress := []string{}
