@@ -13,7 +13,12 @@ type IPAddress struct {
 
 func main() {
 
-	target := IPAddress{ip: "127.0.0.1", port: 5354}
+	IPPack := []IPAddress{
+		{ip: "127.0.0.1", port: 5354},
+	}
+	// in the future we will append IPA to IPPack as user input
+
+	target := IPPack
 	address := target.ip + ":" + strconv.Itoa(target.port)
 
 	// SetofIPAddress := []string{}
