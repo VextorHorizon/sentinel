@@ -23,17 +23,17 @@ func main() {
 		target := Host.ip + ":" + strconv.Itoa(Host.port)
 		// fmt.Printf("index is %d and ip is %s and port is %d \n", i, IP.ip, IP.port)
 
-		fmt.Println(target)
+		// fmt.Println(target)
 
 		conn, err := net.Dial("tcp", target)
 		fmt.Printf("Scanning %s: ", target)
 
 		if err != nil {
 			fmt.Printf("Port %d is closed! \n", Host.port)
-			return
+			continue
 		}
 
-		defer conn.Close()
+		// defer conn.Close()
 
 		if conn != nil {
 			fmt.Printf("Port %d is open! \n", Host.port)
