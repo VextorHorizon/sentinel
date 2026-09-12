@@ -15,7 +15,7 @@ func main() {
 
 	IPPack := []IPAddress{
 		{ip: "127.0.0.1", port: 5354},
-		{ip: "1.1.1.1", port: 43},
+		{ip: "127.0.0.1", port: 5353},
 	}
 	// in the future we will append IPA to IPPack as user input
 
@@ -30,12 +30,13 @@ func main() {
 
 		if err != nil {
 			fmt.Printf("Port %d is closed! \n", Host.port)
-			conn.Close()
+			return
 		}
+
+		defer conn.Close()
 
 		if conn != nil {
 			fmt.Printf("Port %d is open! \n", Host.port)
-			conn.Close()
 		}
 
 	}
