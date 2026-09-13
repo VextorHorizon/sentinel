@@ -30,7 +30,8 @@ func main() {
 		{ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 	}
 
-	IPPack = append(IPPack, userInput)
+	IPPack = append(IPPack, userInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
+	// next time it better that seperate target as ip and port. If it better! Check again!
 
 	for _, Host := range IPPack {
 		Scanner(Host)
