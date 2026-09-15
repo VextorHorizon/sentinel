@@ -20,7 +20,7 @@ func main() {
 
 	var userInput IPAddress
 	userInput.ip = args[1]
-	userInput.port, err = strconv.Atoi(args[2])
+	userInput.port, err = strconv.Atoi(args[2]) //args[2] receive as String
 	if err != nil {
 		fmt.Println("Port missed type")
 	}
