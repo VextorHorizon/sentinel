@@ -18,6 +18,11 @@ func main() {
 
 	args := os.Args
 
+	if len(args) < 3 {
+		fmt.Printf("Usage: sentinel <ip> <port>")
+		return
+	}
+
 	var userInput IPAddress
 	userInput.ip = args[1]
 	userInput.port, err = strconv.Atoi(args[2]) //args[2] receive as String
