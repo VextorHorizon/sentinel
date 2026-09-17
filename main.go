@@ -32,6 +32,7 @@ func main() {
 
 	IPPack := []IPAddress{
 		{ip: "127.0.0.1", port: 5354},
+		{ip: "127.0.0.1", port: 5353},
 		{ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 	}
 
@@ -50,7 +51,7 @@ func Scanner(target IPAddress) {
 	host := target.ip + ":" + strconv.Itoa(target.port) // Itoa = Integer to ASCII
 	fmt.Println(host)
 
-	conn, err := net.Dial("tcp", host)
+	conn, err := net.Dial("tcp", host) //
 	if err != nil {
 		fmt.Printf("Port %d is closed! \n", target.port)
 	}
