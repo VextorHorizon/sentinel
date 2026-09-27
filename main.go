@@ -33,7 +33,7 @@ func main() {
 	IPPack := []IPAddress{
 		{ip: "127.0.0.1", port: 5354},
 		{ip: "127.0.0.1", port: 5353},
-		{ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
+		// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 	}
 
 	IPPack = append(IPPack, userInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
@@ -48,16 +48,22 @@ func main() {
 
 func Scanner(target IPAddress) {
 
+	if target.port > 65535 || target.port < 1 {
+		portString := strconv.Itoa(target.port)
+		fmt.Printf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
+		return
+	}
+
 	host := target.ip + ":" + strconv.Itoa(target.port) // Itoa = Integer to ASCII
 	fmt.Println(host)
 
-	conn, err := net.Dial("tcp", host) //
+	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		fmt.Printf("Port %d is closed! \n", target.port)
+		fmt.Printf("Port %d is closed! \n \n", target.port)
 	}
 
 	if conn != nil {
-		fmt.Printf("Port %d is open! \n", target.port)
+		fmt.Printf("Port %d is open! \n \n", target.port)
 	}
 
 } // single scanning
