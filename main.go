@@ -19,7 +19,7 @@ func main() {
 	args := os.Args
 
 	if len(args) < 3 {
-		fmt.Printf("Usage: sentinel <ip> <port>")
+		fmt.Printf("Error, need format: sentinel <ip> <port>")
 		return
 	}
 
@@ -30,11 +30,10 @@ func main() {
 		fmt.Println("Port missed type")
 	}
 
-	IPPack := []IPAddress{
-		{ip: "127.0.0.1", port: 5354},
-		{ip: "127.0.0.1", port: 5353},
-		// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
-	}
+	IPPack := []IPAddress{}
+	// {ip: "127.0.0.1", port: 5354},
+	// {ip: "127.0.0.1", port: 5353},
+	// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 
 	IPPack = append(IPPack, userInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
 	// next time it better that seperate target as ip and port. If it better! Check again!
@@ -55,7 +54,7 @@ func Scanner(target IPAddress) {
 	}
 
 	host := target.ip + ":" + strconv.Itoa(target.port) // Itoa = Integer to ASCII
-	fmt.Println(host)
+	fmt.Printf("\n%s \n", host)
 
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
