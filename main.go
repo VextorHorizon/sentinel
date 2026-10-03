@@ -28,6 +28,7 @@ func main() {
 	userInput.port, err = strconv.Atoi(args[2]) //args[2] receive as String
 	if err != nil {
 		fmt.Println("Port missed type")
+		return
 	}
 
 	IPPack := []IPAddress{}
@@ -53,10 +54,10 @@ func Scanner(target IPAddress) {
 		return
 	}
 
-	host := target.ip + ":" + strconv.Itoa(target.port) // Itoa = Integer to ASCII
+	host := target.ip + ":" + strconv.Itoa(target.port) // String | Itoa = Integer to ASCII
 	fmt.Printf("\n%s \n", host)
 
-	conn, err := net.Dial("tcp", host)
+	conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself
 	if err != nil {
 		fmt.Printf("Port %d is closed! \n \n", target.port)
 	}
