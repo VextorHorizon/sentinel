@@ -64,6 +64,7 @@ func Scanner(target IPAddress) {
 
 	if conn != nil {
 		fmt.Printf("Port %d is open! \n \n", target.port)
+		conn.Close() // we just checking target connection
 	}
 
 } // single scanning
