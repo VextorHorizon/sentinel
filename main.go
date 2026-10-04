@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"net"
 	"os"
@@ -14,8 +15,8 @@ type IPAddress struct {
 
 func main() {
 
-	UserInput, UserInputError := GetUserInput()
-	if UserInputError == true {
+	UserInput, err := GetUserInput()
+	if err != nil {
 		return
 	}
 	IPPack := []IPAddress{}
@@ -29,14 +30,15 @@ func main() {
 	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure
 }
 
-func GetUserInput() (IPAddress, bool) {
+func GetUserInput() (IPAddress, error) {
 
 	var err error
 	args := os.Args
 
 	if len(args) < 3 {
 		fmt.Printf("Error, need format: sentinel <ip> <port>")
-		return IPAddress{}, true
+		err = errors.New("mismatch user input format")
+		return IPAddress{}, err
 	}
 
 	var userInput IPAddress
@@ -44,9 +46,9 @@ func GetUserInput() (IPAddress, bool) {
 	userInput.port, err = strconv.Atoi(args[2])
 	if err != nil {
 		fmt.Println("Port missed type")
-		return IPAddress{}, true
+		return IPAddress{}, err
 	}
-	return userInput, false
+	return userInput, err
 }
 
 func Scanner(target IPAddress) {
