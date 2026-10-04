@@ -46,6 +46,7 @@ func GetUserInput() (IPAddress, bool) {
 	userInput.port, err = strconv.Atoi(args[2])
 	if err != nil {
 		fmt.Println("Port missed type")
+		return IPAddress{}, true
 	}
 	return userInput, false
 }
