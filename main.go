@@ -9,7 +9,7 @@ import (
 
 type IPAddress struct {
 	ip   string
-	port int
+	port int // Future this going to be []int slice, because it need to handle for multiple port scaning with single IP
 }
 
 func main() {
@@ -20,15 +20,13 @@ func main() {
 	}
 	IPPack := []IPAddress{}
 	// {ip: "127.0.0.1", port: 5354},
-	// {ip: "127.0.0.1", port: 5353},
 	// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 
-	IPPack = append(IPPack, UserInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
-	// next time it better that seperate target as ip and port. If it better! Check again!
+	IPPack = append(IPPack, UserInput) //need IPAddress struct to work
 
 	for _, Host := range IPPack {
 		Scanner(Host)
-	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure!
+	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure
 }
 
 func GetUserInput() (IPAddress, bool) {
@@ -51,8 +49,6 @@ func GetUserInput() (IPAddress, bool) {
 	return userInput, false
 }
 
-// For sure to lets you know, conn is opening!
-
 func Scanner(target IPAddress) {
 
 	if target.port > 65535 || target.port < 1 {
@@ -71,10 +67,9 @@ func Scanner(target IPAddress) {
 
 	if conn != nil {
 		fmt.Printf("Port %d is open! \n \n", target.port)
-		conn.Close() // we just checking target connection
+		conn.Close() // we just checking target connection, no need to leave the door open
 	}
-
-} // single scanning
+}
 
 // method use as sword, function use as put var in to blender
 // for those who read this. I will say, YES
