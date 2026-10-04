@@ -14,34 +14,46 @@ type IPAddress struct {
 
 func main() {
 
-	var err error
+	// var err error
 
 	args := os.Args
-
 	if len(args) < 3 {
 		fmt.Printf("Error, need format: sentinel <ip> <port>")
 		return
 	}
 
-	var userInput IPAddress
-	userInput.ip = args[1]
-	userInput.port, err = strconv.Atoi(args[2]) //args[2] receive as String
-	if err != nil {
-		fmt.Println("Port missed type")
-		return
-	}
-
+	// var userInput IPAddress
+	// userInput.ip = args[1]
+	// userInput.port, err = strconv.Atoi(args[2]) //args[2] receive as String
+	// if err != nil {
+	// 	fmt.Println("Port missed type")
+	// 	return
+	// }
+	UserInput := GetUserInput()
 	IPPack := []IPAddress{}
 	// {ip: "127.0.0.1", port: 5354},
 	// {ip: "127.0.0.1", port: 5353},
 	// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
-
-	IPPack = append(IPPack, userInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
+	IPPack = append(IPPack, UserInput) // userInput, If there no port(args[2]) it will error. Because loop is checking target(ip, port)
 	// next time it better that seperate target as ip and port. If it better! Check again!
 
 	for _, Host := range IPPack {
 		Scanner(Host)
 	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure!
+}
+
+func GetUserInput() IPAddress {
+
+	var err error
+	args := os.Args
+
+	var userInput IPAddress
+	userInput.ip = args[1]
+	userInput.port, err = strconv.Atoi(args[2])
+	if err != nil {
+		fmt.Println("Port missed type")
+	}
+	return userInput
 }
 
 // For sure to lets you know, conn is opening!
