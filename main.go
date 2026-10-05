@@ -73,7 +73,7 @@ func Scanner(target IPAddress) {
 		if port > 65535 || port < 1 {
 			portString := strconv.Itoa(port)
 			fmt.Printf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
-			return
+
 		}
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
