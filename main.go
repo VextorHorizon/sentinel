@@ -19,8 +19,9 @@ func main() {
 	if err != nil {
 		return
 	}
+
 	IPPack := []IPAddress{}
-	// {ip: "127.0.0.1", port: 5354},
+	// {ip: "127.0.0.1", port: 5354}, //next step is to feat: one IP, multiple ports
 	// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 
 	IPPack = append(IPPack, UserInput) //need IPAddress struct to work
@@ -39,7 +40,7 @@ func GetUserInput() (IPAddress, error) {
 		fmt.Printf("Error, need format: sentinel <ip> <port>")
 		err = errors.New("mismatch user input format")
 		return IPAddress{}, err
-	}
+	} //first debuging without AI that I ever done!
 
 	var userInput IPAddress
 	userInput.ip = args[1]
