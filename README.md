@@ -4,12 +4,12 @@ A lightweight TCP network scanner written in Go.
 
 Sentinel is a learning-focused project built to explore low-level networking, CLI development, and eventually concurrency in Go.
 
-> **Current version:** `v0.0.3`  
+> **Current version:** `v0.0.4`  
 > Sentinel is still in early development.
 
 ## Current Features
 
-- Scan a TCP port on an IPv4 address
+- Scan TCP port on an IPv4 address
 - Accept a target IP and port from command-line arguments
 - Detect whether a TCP connection can be established
 - Scan multiple targets sequentially
@@ -62,7 +62,7 @@ Targets are represented using an `IPAddress` struct:
 ```go
 type IPAddress struct {
     ip   string
-    port int
+    port []int
 }
 ```
 
@@ -82,9 +82,9 @@ The current development build also contains several hard-coded targets used for 
 
 Planned improvements include:
 
-- Remove hard-coded development targets
-- Scan multiple ports
-- Scan multiple hosts
+- Remove hard-coded development targets [x]
+- Scan multiple ports [x]
+- Scan multiple hosts 
 - Add configurable connection timeout
 - Add concurrent scanning with goroutines
 - Improve error handling and input validation
