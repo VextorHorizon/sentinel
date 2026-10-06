@@ -80,11 +80,11 @@ func Scanner(target IPAddress) {
 		fmt.Printf("\n%s \n", host)
 
 		conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself
-		if err != nil {
+		if err != nil {                    //Connection unsuccess
 			fmt.Printf("Port %d is closed! \n \n", port)
 		}
 
-		if conn != nil {
+		if conn != nil { // Connection success
 			fmt.Printf("Port %d is open! \n \n", port)
 			conn.Close() // we just checking target connection, no need to leave the door open
 		}
