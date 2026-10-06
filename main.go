@@ -44,24 +44,20 @@ func GetUserInput() (IPAddress, error) {
 
 	var userInput IPAddress
 	userInput.ip = args[1]
-	//userInput.port = [1,2,3,4,5 7,8,9,6,5] string slice
+	//userInputports = [1,2,3,4,5 7,8,9,6,5] string slice
 	//strPortsSlice = [1,2,3,4,5] [7,8,9,6,5]
 	// strPort = [1 2 3 4 5]
-	userInputports := []string{args[2]}
-	for _, strPortsSlice := range userInputports {
-		strPorts := strings.Split(strPortsSlice, ",")
+	userInputports := strings.Split(args[2], ",")
+	for _, strPort := range userInputports {
+		intPort, err := strconv.Atoi(strPort)
 
-		for _, strPort := range strPorts {
-			intPort, err := strconv.Atoi(strPort)
-
-			if err != nil {
-				fmt.Println("Port missed type, port need to be Integer")
-				return IPAddress{}, err
-			}
-
-			userInput.port = append(userInput.port, intPort)
-
+		if err != nil {
+			fmt.Println("Port missed type, port need to be Integer")
+			return IPAddress{}, err
 		}
+
+		userInput.port = append(userInput.port, intPort)
+
 	}
 	return userInput, err
 }
