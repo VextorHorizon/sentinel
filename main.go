@@ -87,7 +87,10 @@ func strParser(strPortUserInput string) []int {
 		fmt.Println("Uncorrect parser format")
 		return nil
 	}
-
+	if parser[0] >= parser[1] {
+		fmt.Printf("Uncorrect parser format(%d-%d) to (%d-%d)?", parser[0], parser[1], parser[1], parser[0])
+		return nil
+	}
 	parser[1] += 1 //as parser[1] normally it be -1 IDK WHY
 	var finishParser []int
 	for i := parser[0]; i < parser[1]; i++ {
