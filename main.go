@@ -14,7 +14,7 @@ type IPAddress struct {
 	port []int
 }
 
-func main() {
+func main() { //future refactor: sub-function should return err to decide it on main function
 
 	UserInput, err := GetUserInput()
 	if err != nil {
@@ -86,10 +86,10 @@ func strParser(strPortUserInput string) []int {
 
 	if len(parser) > 2 { // validate if input is more than just two number for parser
 		fmt.Println("Uncorrect parser format")
-		return nil
+		return nil // for future refactor, should return err and lets the main decide on their own
 	}
 	if parser[0] >= parser[1] {
-		fmt.Printf("Uncorrect parser format(%d-%d) to (%d-%d)?",
+		fmt.Printf("Incorrect parser format(%d-%d) to (%d-%d)?",
 			parser[0], parser[1],
 			parser[1], parser[0])
 		return nil
