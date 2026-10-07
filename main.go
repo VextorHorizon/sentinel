@@ -61,7 +61,7 @@ func GetUserInput() (IPAddress, error) {
 		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
 			fmt.Println("Port missed type, port need to be Integer")
-			return IPAddress{}, err
+			continue
 		}
 
 		//Port is integer now
@@ -78,7 +78,8 @@ func strParser(strPortUserInput string) []int {
 	for _, singleStr := range strParser {
 		singleInt, err := strconv.Atoi(singleStr)
 		if err != nil {
-			fmt.Println("Error from strParser conv str to int")
+			fmt.Println("Error: incorrect format from Parser")
+			return nil
 		}
 		parser = append(parser, singleInt) // put int to parser[]
 	}
@@ -117,6 +118,7 @@ func Scanner(target IPAddress) {
 		if port > 65535 || port < 1 {
 			portString := strconv.Itoa(port)
 			fmt.Printf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
+			continue
 
 		}
 
