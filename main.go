@@ -45,21 +45,64 @@ func GetUserInput() (IPAddress, error) {
 	var userInput IPAddress
 	userInput.ip = args[1]
 	//userInputports = [1,2,3,4,5 7,8,9,6,5] string slice
-	//strPortsSlice = [1,2,3,4,5] [7,8,9,6,5]
-	// strPort = [1 2 3 4 5]
+	// strPort = [1 2 3 4 5 7 8 9 6 5]
 	userInputports := strings.Split(args[2], ",")
+	var parser []int
 	for _, strPort := range userInputports {
-		intPort, err := strconv.Atoi(strPort)
+		//str Port that is still String type
+		if strings.Contains(strPort, "-") { // if the input is parser(1-12)
+			parser = strParser(strPort)
+			for _, i := range parser {
+				userInput.port = append(userInput.port, i)
+			}
+			continue
+		}
 
+		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
 			fmt.Println("Port missed type, port need to be Integer")
 			return IPAddress{}, err
 		}
 
+		//Port is integer now
+
 		userInput.port = append(userInput.port, intPort)
 
 	}
 	return userInput, err
+}
+
+func strParser(strPortUserInput string) []int {
+	var parser []int
+	strParser := strCutParser(strPortUserInput) // [1 12]
+	for _, singleStr := range strParser {
+		singleInt, err := strconv.Atoi(singleStr)
+		if err != nil {
+			fmt.Println("Error from strParser conv str to int")
+		}
+		parser = append(parser, singleInt) // put int to parser[]
+	}
+
+	if len(parser) > 2 { // validate if input is more than just two number for parser
+		fmt.Println("Uncorrect parser format")
+		return nil
+	}
+
+	parser[1] += 1 //as parser[1] normally it be -1 IDK WHY
+	var finishParser []int
+	for i := parser[0]; i < parser[1]; i++ {
+		finishParser = append(finishParser, i)
+
+	}
+	// fmt.Println(finishParser)
+	return finishParser //[1 2 3 4 5 6]
+}
+
+func strCutParser(strCut string) []string {
+	//[1-12]
+	strCutal := strings.Split(strCut, "-")
+	return strCutal
+
 }
 
 func Scanner(target IPAddress) {
