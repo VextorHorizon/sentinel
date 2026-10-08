@@ -26,10 +26,22 @@ func main() { //future refactor: sub-function should return err to decide it on 
 	// {ip: "8.8.8.8", port: 60}, // this connecting to outside of the world, slow.
 
 	IPPack = append(IPPack, UserInput)
+	var openPort []int
+	var closePort []int
 
 	for _, Host := range IPPack {
-		Scanner(Host)
+		openPort, closePort, err = Scanner(Host)
+		if err != nil {
+			fmt.Println(err)
+		}
 	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure
+	for _, port := range openPort {
+		fmt.Printf("%d             open\n", port)
+	}
+	for _, port := range closePort {
+		fmt.Printf("%d             closed\n", port)
+	}
+	// fmt.Println(openPort, closePort)
 }
 
 func GetUserInput() (IPAddress, error) {
@@ -114,32 +126,34 @@ func strCutParser(strCut string) []string {
 
 }
 
-func Scanner(target IPAddress) {
-
+func Scanner(target IPAddress) ([]int, []int, error) {
+	var err error
+	openPort := []int{}
+	closePort := []int{}
 	for _, port := range target.port {
 
 		if port > 65535 || port < 1 {
 			portString := strconv.Itoa(port)
-			fmt.Printf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
-			continue
-
-		} //1
+			return nil, nil, fmt.Errorf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
+		}
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
-		// fmt.Printf("\n%s \n", host)
 
 		conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself //2
 		if err != nil {                    //Connection unsuccess
-			fmt.Printf("%s           closed \n", host)
+			closePort = append(closePort, port)
 		}
 
 		if conn != nil { // Connection success
-			fmt.Printf("%s           open \n", host)
 			conn.Close() // we just checking target connection, no need to leave the door open
+			openPort = append(openPort, port)
+
 		} //3
 
 	}
-
+	// fmt.Println(closePort)
+	// fmt.Println(openPort)
+	return openPort, closePort, err
 }
 
 // method use as sword, function use as put var in to blender
