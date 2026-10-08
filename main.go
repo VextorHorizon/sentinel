@@ -123,20 +123,20 @@ func Scanner(target IPAddress) {
 			fmt.Printf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
 			continue
 
-		}
+		} //1
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
-		fmt.Printf("\n%s \n", host)
+		// fmt.Printf("\n%s \n", host)
 
-		conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself
+		conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself //2
 		if err != nil {                    //Connection unsuccess
-			fmt.Printf("Port %d is closed! \n \n", port)
+			fmt.Printf("%s           closed \n", host)
 		}
 
 		if conn != nil { // Connection success
-			fmt.Printf("Port %d is open! \n \n", port)
+			fmt.Printf("%s           open \n", host)
 			conn.Close() // we just checking target connection, no need to leave the door open
-		}
+		} //3
 
 	}
 
