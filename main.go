@@ -18,6 +18,7 @@ func main() { //future refactor: sub-function should return err to decide it on 
 
 	UserInput, err := GetUserInput()
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -37,8 +38,7 @@ func GetUserInput() (IPAddress, error) {
 	args := os.Args
 
 	if len(args) < 3 {
-		fmt.Printf("Error, need format: sentinel <ip> <port>")
-		err = errors.New("mismatch user input format")
+		err = errors.New("Error, need format: sentinel <ip> <port>")
 		return IPAddress{}, err
 	} //first debugging without AI that I ever done!
 
@@ -50,8 +50,11 @@ func GetUserInput() (IPAddress, error) {
 	var parser []int
 	for _, strPort := range userInputports {
 		//str Port that is still String type
-		if strings.Contains(strPort, "-") { // if the input is parser(1-12)
-			parser = strParser(strPort)
+		if strings.Contains(strPort, "-") { // if the input is parser(1-12), return []int
+			parser, err = strParser(strPort)
+			if err != nil {
+				return IPAddress{}, err
+			}
 			for _, i := range parser {
 				userInput.port = append(userInput.port, i)
 			}
@@ -60,8 +63,7 @@ func GetUserInput() (IPAddress, error) {
 
 		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
-			fmt.Println("Port missed type, port need to be Integer")
-			continue
+			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort)
 		}
 
 		//Port is integer now
@@ -72,27 +74,29 @@ func GetUserInput() (IPAddress, error) {
 	return userInput, err
 }
 
-func strParser(strPortUserInput string) []int {
+func strParser(strPortUserInput string) ([]int, error) {
+	var err error
 	var parser []int
 	strParser := strCutParser(strPortUserInput) // [1 12]
 	for _, singleStr := range strParser {
 		singleInt, err := strconv.Atoi(singleStr)
 		if err != nil {
-			fmt.Println("Error: incorrect format from Parser")
-			return nil
+			return nil, fmt.Errorf("Invalid port range format: %s", singleStr)
 		}
 		parser = append(parser, singleInt) // put int to parser[]
 	}
 
 	if len(parser) > 2 { // validate if input is more than just two number for parser
 		fmt.Println("Uncorrect parser format")
-		return nil // for future refactor, should return err and lets the main decide on their own
+		return nil, fmt.Errorf("Invalid port range: %d", parser) // for future refactor, should return err and lets the main decide on their own
 	}
 	if parser[0] >= parser[1] {
-		fmt.Printf("Incorrect parser format(%d-%d) to (%d-%d)?",
+		if parser[0] == parser[1] {
+			return nil, fmt.Errorf("Invalid parser format(%d)", parser[0])
+		}
+		return nil, fmt.Errorf("Invalid parser format(%d-%d) to (%d-%d)?",
 			parser[0], parser[1],
 			parser[1], parser[0])
-		return nil
 	}
 	parser[1] += 1 //as parser[1] normally it be -1 IDK WHY
 	var finishParser []int
@@ -101,7 +105,7 @@ func strParser(strPortUserInput string) []int {
 
 	}
 	// fmt.Println(finishParser)
-	return finishParser //[1 2 3 4 5 6]
+	return finishParser, err //[1 2 3 4 5 6]
 }
 
 func strCutParser(strCut string) []string {
