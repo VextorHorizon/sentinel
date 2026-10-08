@@ -87,7 +87,6 @@ func strParser(strPortUserInput string) ([]int, error) {
 	}
 
 	if len(parser) > 2 { // validate if input is more than just two number for parser
-		fmt.Println("Uncorrect parser format")
 		return nil, fmt.Errorf("Invalid port range: %d", parser) // for future refactor, should return err and lets the main decide on their own
 	}
 	if parser[0] >= parser[1] {
