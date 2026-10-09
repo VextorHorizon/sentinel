@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type IPAddress struct {
@@ -15,6 +16,8 @@ type IPAddress struct {
 }
 
 func main() { //future refactor: sub-function should return err to decide it on main function
+
+	timeStart := time.Now()
 
 	UserInput, err := GetUserInput()
 	if err != nil {
@@ -41,7 +44,8 @@ func main() { //future refactor: sub-function should return err to decide it on 
 	for _, port := range closePort {
 		fmt.Printf("%d             closed\n", port)
 	}
-	// fmt.Println(openPort, closePort)
+
+	fmt.Println("This operation took: ", time.Since(timeStart))
 }
 
 func GetUserInput() (IPAddress, error) {
