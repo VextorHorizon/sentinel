@@ -30,7 +30,7 @@ func main() { //future refactor: sub-function should return err to decide it on 
 	var closePort []int
 
 	for _, Host := range IPPack {
-		openPort, closePort, err = Scanner(Host)
+		openPort, closePort, err = ScannerDoor(Host)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -126,12 +126,12 @@ func strCutParser(strCut string) []string {
 
 }
 
-func Scanner(target IPAddress) ([]int, []int, error) {
+func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	var err error
 	openPort := []int{}
 	closePort := []int{}
-	for _, port := range target.port {
 
+	for _, port := range target.port {
 		if port > 65535 || port < 1 {
 			portString := strconv.Itoa(port)
 			return nil, nil, fmt.Errorf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
@@ -139,21 +139,30 @@ func Scanner(target IPAddress) ([]int, []int, error) {
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
 
-		conn, err := net.Dial("tcp", host) //Open the connection between the target and ourself //2
-		if err != nil {                    //Connection unsuccess
+		openResult, closeResult := portScanner(host) //Open the connection between the target and ourself //2
+		if closeResult == true {                     //Connection unsuccess
 			closePort = append(closePort, port)
 		}
-
-		if conn != nil { // Connection success
-			conn.Close() // we just checking target connection, no need to leave the door open
+		if openResult == true { // Connection success
+			// we just checking target connection, no need to leave the door open
 			openPort = append(openPort, port)
-
-		} //3
-
+		}
 	}
-	// fmt.Println(closePort)
-	// fmt.Println(openPort)
 	return openPort, closePort, err
+}
+
+func portScanner(host string) (bool, bool) {
+
+	conn, err := net.Dial("tcp", host)
+	if err != nil {
+		return false, true
+	}
+	if conn != nil {
+		conn.Close()
+		return true, false
+	}
+
+	return false, false
 }
 
 // method use as sword, function use as put var in to blender
