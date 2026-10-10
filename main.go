@@ -143,11 +143,11 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
 
-		openResult, closeResult := portScanner(host) //Open the connection between the target and ourself //2
-		if closeResult == true {                     //Connection unsuccess
+		Result := portScanner(host) //Open the connection between the target and ourself //2
+		if Result == false {        //Connection unsuccess
 			closePort = append(closePort, port)
 		}
-		if openResult == true { // Connection success
+		if Result == true { // Connection success
 			// we just checking target connection, no need to leave the door open
 			openPort = append(openPort, port)
 		}
@@ -155,18 +155,18 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	return openPort, closePort, err
 }
 
-func portScanner(host string) (bool, bool) {
+func portScanner(host string) bool {
 
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		return false, true
+		return false
 	}
 	if conn != nil {
 		conn.Close()
-		return true, false
+		return true
 	}
 
-	return false, false
+	return false
 }
 
 // method use as sword, function use as put var in to blender
