@@ -169,6 +169,9 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 The problem is, it working through finished while the work that goes parallel isn't finished yet. (it didn't wait)
 That is the point that we have to wait all worker in concurrency to finish the work before return []int to main()
 lets imagination that all workers hold a tool name: portscanner()
+
+1.channel is return(but channel return when it have a reciever(outside function)),
+2.go run goroutine don't care if no boss wait
 */
 func portScanner(host string, ch chan scanResult, port int) {
 
