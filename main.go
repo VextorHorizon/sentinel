@@ -172,6 +172,7 @@ lets imagination that all workers hold a tool name: portscanner()
 
 1.channel is return(but channel return when it have a reciever(outside function)),
 2.go run goroutine don't care if no boss wait
+3.boss have to wait workers to send their finished work, all of them. before lets them go home
 */
 func portScanner(host string, ch chan scanResult, port int) {
 
