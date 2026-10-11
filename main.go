@@ -130,10 +130,16 @@ func strCutParser(strCut string) []string {
 
 }
 
+type scanResult struct {
+	Port   int
+	Result bool
+}
+
 func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	var err error
 	openPort := []int{}
 	closePort := []int{}
+	pipeVerifiedportStatus := make(chan scanResult)
 
 	for _, port := range target.port {
 		if port > 65535 || port < 1 {
@@ -143,30 +149,50 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
 
-		Result := portScanner(host) //Open the connection between the target and ourself //2
-		if Result == false {        //Connection unsuccess
-			closePort = append(closePort, port)
-		}
-		if Result == true { // Connection success
-			// we just checking target connection, no need to leave the door open
-			openPort = append(openPort, port)
-		}
+		go portScanner(host, pipeVerifiedportStatus, port) //Open the connection between the target and ourself //2
+
 	}
+
+	result := <-pipeVerifiedportStatus
+	if result.Result == false { //Connection unsuccess
+		closePort = append(closePort, result.Port)
+	}
+	if result.Result == true { // Connection success
+		// we just checking target connection, no need to leave the door open
+		openPort = append(openPort, result.Port)
+	}
+
 	return openPort, closePort, err
 }
 
-func portScanner(host string) bool {
+/*
+The problem is, it working through finished while the work that goes parallel isn't finished yet. (it didn't wait)
+That is the point that we have to wait all worker in concurrency to finish the work before return []int to main()
+lets imagination that all workers hold a tool name: portscanner()
+*/
+func portScanner(host string, ch chan scanResult, port int) {
 
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
-		return false
+		ch <- scanResult{
+			Port:   port,
+			Result: false,
+		}
+		return
 	}
 	if conn != nil {
 		conn.Close()
-		return true
+		ch <- scanResult{
+			Port:   port,
+			Result: true,
+		}
+		return
 	}
 
-	return false
+	ch <- scanResult{
+		Port:   port,
+		Result: false,
+	}
 }
 
 // method use as sword, function use as put var in to blender
