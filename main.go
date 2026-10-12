@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 )
 
@@ -137,9 +138,14 @@ type scanResult struct {
 
 func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	var err error
+	var wg sync.WaitGroup
 	openPort := []int{}
 	closePort := []int{}
 	pipeVerifiedportStatus := make(chan scanResult)
+
+	var result scanResult
+
+	wg.Add(len(target.ip))
 
 	for _, port := range target.port {
 		if port > 65535 || port < 1 {
@@ -149,11 +155,11 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
 
-		go portScanner(host, pipeVerifiedportStatus, port) //Open the connection between the target and ourself //2
+		go portScanner(host, pipeVerifiedportStatus, port, &wg) //Open the connection between the target and ourself //2
 
 	}
-
-	result := <-pipeVerifiedportStatus
+	// still single recieve
+	result = <-pipeVerifiedportStatus
 	if result.Result == false { //Connection unsuccess
 		closePort = append(closePort, result.Port)
 	}
@@ -161,6 +167,8 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 		// we just checking target connection, no need to leave the door open
 		openPort = append(openPort, result.Port)
 	}
+
+	wg.Wait()
 
 	return openPort, closePort, err
 }
@@ -174,7 +182,9 @@ lets imagination that all workers hold a tool name: portscanner()
 2.go run goroutine don't care if no boss wait
 3.boss have to wait workers to send their finished work, all of them. before lets them go home
 */
-func portScanner(host string, ch chan scanResult, port int) {
+func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup) {
+
+	defer wg.Done()
 
 	conn, err := net.Dial("tcp", host)
 	if err != nil {
@@ -182,7 +192,7 @@ func portScanner(host string, ch chan scanResult, port int) {
 			Port:   port,
 			Result: false,
 		}
-		return
+
 	}
 	if conn != nil {
 		conn.Close()
@@ -190,7 +200,7 @@ func portScanner(host string, ch chan scanResult, port int) {
 			Port:   port,
 			Result: true,
 		}
-		return
+
 	}
 
 	ch <- scanResult{
