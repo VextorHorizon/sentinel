@@ -150,12 +150,10 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 		}
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
-		wg.Add(1)
-		go portScanner(host, ch, port, &wg)
+		wg.Add(1)                                    // future: need to set boundary, not to have that many worker (if user scan 60000 port, We not going to let goroutine spawn for 60000 workers)
+		go portScanner(host, ch, port, &wg)          // wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
 
 	}
-
-	// wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
 
 	go func() {
 		wg.Wait()
