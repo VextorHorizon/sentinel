@@ -16,7 +16,7 @@ type IPAddress struct {
 	port []int
 }
 
-func main() { //future refactor: sub-function should return err to decide it on main function
+func main() {
 
 	timeStart := time.Now()
 
@@ -120,7 +120,6 @@ func strParser(strPortUserInput string) ([]int, error) {
 		finishParser = append(finishParser, i)
 
 	}
-	// fmt.Println(finishParser)
 	return finishParser, err //[1 2 3 4 5 6]
 }
 
@@ -139,13 +138,10 @@ type scanResult struct {
 func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	var err error
 	var wg sync.WaitGroup
+	ch := make(chan scanResult)
+
 	openPort := []int{}
 	closePort := []int{}
-	pipeVerifiedportStatus := make(chan scanResult)
-
-	var result scanResult
-
-	wg.Add(len(target.ip))
 
 	for _, port := range target.port {
 		if port > 65535 || port < 1 {
@@ -154,58 +150,57 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 		}
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
-
-		go portScanner(host, pipeVerifiedportStatus, port, &wg) //Open the connection between the target and ourself //2
+		wg.Add(1)
+		go portScanner(host, ch, port, &wg)
 
 	}
-	// still single recieve
-	result = <-pipeVerifiedportStatus
-	if result.Result == false { //Connection unsuccess
-		closePort = append(closePort, result.Port)
-	}
-	if result.Result == true { // Connection success
-		// we just checking target connection, no need to leave the door open
-		openPort = append(openPort, result.Port)
-	}
 
-	wg.Wait()
+	// wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
+
+	go func() {
+		wg.Wait()
+		close(ch)
+	}()
+	/*
+		close Channel after all goroutine done the work.
+		Because of range ch will stop.
+		If not, it will deadlock cuz ch waiting another value from ch<- that already finished and has no value left
+	*/
+
+	for result := range ch {
+
+		if result.Result == false {
+			closePort = append(closePort, result.Port)
+		}
+		if result.Result == true {
+			openPort = append(openPort, result.Port)
+		}
+	} // future we need to arranging from smallest to largest
 
 	return openPort, closePort, err
 }
 
-/*
-The problem is, it working through finished while the work that goes parallel isn't finished yet. (it didn't wait)
-That is the point that we have to wait all worker in concurrency to finish the work before return []int to main()
-lets imagination that all workers hold a tool name: portscanner()
+// finished feat Concurrency feature. It took me for 4 days to learn about *channel*, sync.WaitGroup and complete mental model of GOROUTINE
 
-1.channel is return(but channel return when it have a reciever(outside function)),
-2.go run goroutine don't care if no boss wait
-3.boss have to wait workers to send their finished work, all of them. before lets them go home
-*/
 func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup) {
 
 	defer wg.Done()
 
 	conn, err := net.Dial("tcp", host)
-	if err != nil {
+	if err != nil { //Connection unsuccess
 		ch <- scanResult{
 			Port:   port,
 			Result: false,
 		}
 
 	}
-	if conn != nil {
+	if conn != nil { //Connection success
 		conn.Close()
 		ch <- scanResult{
 			Port:   port,
 			Result: true,
 		}
 
-	}
-
-	ch <- scanResult{
-		Port:   port,
-		Result: false,
 	}
 }
 
