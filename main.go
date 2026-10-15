@@ -38,7 +38,7 @@ func main() {
 		if err != nil {
 			fmt.Println(err)
 		}
-	} // it run sequential. if 2 is connecting slow, all the process is slow. future we going to add goroutine for sure
+	}
 	for _, port := range openPort {
 		fmt.Printf("%d             open\n", port)
 	}
@@ -104,7 +104,7 @@ func strParser(strPortUserInput string) ([]int, error) {
 	}
 
 	if len(parser) > 2 { // validate if input is more than just two number for parser
-		return nil, fmt.Errorf("Invalid port range: %d", parser) // for future refactor, should return err and lets the main decide on their own
+		return nil, fmt.Errorf("Invalid port range: %d", parser)
 	}
 	if parser[0] >= parser[1] {
 		if parser[0] == parser[1] {
