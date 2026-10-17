@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -39,6 +40,8 @@ func main() {
 			fmt.Println(err)
 		}
 	}
+	slices.Sort(openPort)
+	slices.Sort(closePort)
 	for _, port := range openPort {
 		fmt.Printf("%d             open\n", port)
 	}
