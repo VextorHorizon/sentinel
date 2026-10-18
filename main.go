@@ -2,9 +2,9 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"net"
-	"os"
 	"slices"
 	"strconv"
 	"strings"
@@ -55,18 +55,25 @@ func main() {
 func GetUserInput() (IPAddress, error) {
 
 	var err error
-	args := os.Args
+	// args := os.Args
 
-	if len(args) < 3 {
+	p := flag.String("p", "0", "port number: 1-65535")
+
+	flag.Parse()
+	args := flag.Args()
+
+	ports := *p
+
+	if len(args) < 1 {
 		err = errors.New("Error, need format: sentinel <ip> <port>")
 		return IPAddress{}, err
 	} //first debugging without AI that I ever done!
 
 	var userInput IPAddress
-	userInput.ip = args[1]
+	userInput.ip = args[0]
 	//userInputports = [1,2,3,4,5 7,8,9,6,5] string slice
 	// strPort = [1 2 3 4 5 7 8 9 6 5]
-	userInputports := strings.Split(args[2], ",")
+	userInputports := strings.Split(ports, ",")
 	var parser []int
 	for _, strPort := range userInputports {
 		//str Port that is still String type
