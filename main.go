@@ -57,14 +57,14 @@ func GetUserInput() (IPAddress, error) {
 	var err error
 	// args := os.Args
 
-	p := flag.String("p", "0", "port number: 1-65535")
+	p := flag.String("p", "", "port number: 1-65535")
 
 	flag.Parse()
 	args := flag.Args()
 
 	ports := *p
 
-	if len(args) < 1 {
+	if len(args) < 1 || ports == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
 		return IPAddress{}, err
 	} //first debugging without AI that I ever done!
