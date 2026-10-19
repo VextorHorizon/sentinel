@@ -26,34 +26,30 @@ go build -o sentinel
 Run it with a target IP and port:
 
 ```bash
-./sentinel <ip> <port>
+./sentinel <option> <port> <ip>
 ```
 
 Example:
 
 ```bash
-./sentinel 127.0.0.1 8080
+./sentinel -p 5350 127.0.0.1
+./sentinel -p 5350-5400 127.0.0.1
+./sentinel -p 5350,5351,5352 127.0.0.1
 ```
 
 On Windows:
 
 ```powershell
-.\sentinel.exe 127.0.0.1 8080
-.\sentinel.exe 127.0.0.1 8080,10240-10260
+.\sentinel.exe -p 5350 127.0.0.1
+.\sentinel.exe -p 5350,5351,5352 127.0.0.1
 ```
 
 Example output:
 
 ```text
-127.0.0.1:8080
-Port 8080 is open!
-```
-
-or:
-
-```text
-127.0.0.1:8080
-Port 8080 is closed!
+5354             open
+5350             closed
+5351             closed
 ```
 
 ## Current Architecture
