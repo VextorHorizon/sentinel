@@ -12,6 +12,11 @@ import (
 	"time"
 )
 
+/* Future:
+- Limits goroutine only 500 workers to work
+
+*/
+
 type IPAddress struct {
 	ip   string
 	port []int
