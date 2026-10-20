@@ -199,7 +199,7 @@ func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup) 
 
 	defer wg.Done()
 
-	conn, err := net.Dial("tcp", host)
+	conn, err := net.DialTimeout("tcp", host, 3*time.Second)
 	if err != nil { //Connection unsuccess
 		ch <- scanResult{
 			Port:   port,
