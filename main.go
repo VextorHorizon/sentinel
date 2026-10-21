@@ -13,7 +13,7 @@ import (
 )
 
 /* Future:
-- Limits goroutine only 500 workers to work
+- Limits goroutine only 500 workers to work, tomorrow - I'm too sleepy today, I can't handle it. Quite sad
 
 */
 
