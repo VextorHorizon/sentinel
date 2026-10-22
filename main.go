@@ -155,6 +155,8 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 	var wg sync.WaitGroup
 	ch := make(chan scanResult)
 
+	limit := make(chan bool, 500)
+
 	openPort := []int{}
 	closePort := []int{}
 
@@ -164,9 +166,11 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 			return nil, nil, fmt.Errorf("Reject %s:%s, Port must between 1 and 65535", target.ip, portString)
 		}
 
+		limit <- true
+
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
 		wg.Add(1)                                    // future: need to set boundary, not to have that many worker (if user scan 60000 port, We not going to let goroutine spawn for 60000 workers)
-		go portScanner(host, ch, port, &wg)          // wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
+		go portScanner(host, ch, port, &wg, limit)   // wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
 
 	}
 
@@ -195,7 +199,7 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 
 // finished feat Concurrency feature. It took me for 4 days to learn about *channel*, sync.WaitGroup and complete mental model of GOROUTINE
 
-func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup) {
+func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup, limit chan bool) {
 
 	defer wg.Done()
 
@@ -215,6 +219,9 @@ func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup) 
 		}
 
 	}
+
+	<-limit
+
 }
 
 // method use as sword, function use as put var in to blender
