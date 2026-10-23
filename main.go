@@ -25,7 +25,7 @@ func main() {
 
 	timeStart := time.Now()
 
-	UserInput, err, timeoutDuration, worker := GetUserInput()
+	UserInput, err, timeoutDuration, worker, openportCommand := GetUserInput()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -46,17 +46,23 @@ func main() {
 	}
 	slices.Sort(openPort)
 	slices.Sort(closePort)
+
 	for _, port := range openPort {
 		fmt.Printf("%d             open\n", port)
 	}
-	for _, port := range closePort {
-		fmt.Printf("%d             closed\n", port)
+	if openportCommand == true {
+	}
+
+	if openportCommand == false {
+		for _, port := range closePort {
+			fmt.Printf("%d             closed\n", port)
+		}
 	}
 
 	fmt.Println("This operation took: ", time.Since(timeStart))
 }
 
-func GetUserInput() (IPAddress, error, int, int) {
+func GetUserInput() (IPAddress, error, int, int, bool) {
 
 	var err error
 
@@ -68,6 +74,7 @@ func GetUserInput() (IPAddress, error, int, int) {
 	p := flag.String("p", "", "port number: 1-65535")
 	t := flag.Int("t", 3, "timeout duration in second")
 	w := flag.Int("w", 500, "amount of Goroutine workers")
+	o := flag.Bool("o", false, "command that allow to see just open port")
 
 	flag.Parse()
 	args := flag.Args()
@@ -75,10 +82,11 @@ func GetUserInput() (IPAddress, error, int, int) {
 	ports := *p
 	timeoutDuration := *t
 	worker := *w
+	openportCommand := *o
 
 	if len(args) < 1 || ports == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
-		return IPAddress{}, err, timeoutDuration, worker
+		return IPAddress{}, err, timeoutDuration, worker, openportCommand
 	} //first debugging without AI that I ever done!
 
 	var userInput IPAddress
@@ -92,7 +100,7 @@ func GetUserInput() (IPAddress, error, int, int) {
 		if strings.Contains(strPort, "-") { // if the input is parser(1-12), return []int
 			parser, err = strParser(strPort)
 			if err != nil {
-				return IPAddress{}, err, timeoutDuration, worker
+				return IPAddress{}, err, timeoutDuration, worker, openportCommand
 			}
 			for _, i := range parser {
 				userInput.port = append(userInput.port, i)
@@ -102,7 +110,7 @@ func GetUserInput() (IPAddress, error, int, int) {
 
 		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
-			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort), timeoutDuration, worker
+			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort), timeoutDuration, worker, openportCommand
 		}
 
 		//Port is integer now
@@ -110,7 +118,7 @@ func GetUserInput() (IPAddress, error, int, int) {
 		userInput.port = append(userInput.port, intPort)
 
 	}
-	return userInput, err, timeoutDuration, worker
+	return userInput, err, timeoutDuration, worker, openportCommand
 }
 
 func strParser(strPortUserInput string) ([]int, error) {
