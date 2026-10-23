@@ -25,7 +25,7 @@ func main() {
 
 	timeStart := time.Now()
 
-	UserInput, err, timeoutDuration := GetUserInput()
+	UserInput, err, timeoutDuration, worker := GetUserInput()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -39,7 +39,7 @@ func main() {
 	var closePort []int
 
 	for _, Host := range IPPack { //Multi Host
-		openPort, closePort, err = ScannerDoor(Host, timeoutDuration)
+		openPort, closePort, err = ScannerDoor(Host, timeoutDuration, worker)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -56,7 +56,7 @@ func main() {
 	fmt.Println("This operation took: ", time.Since(timeStart))
 }
 
-func GetUserInput() (IPAddress, error, int) {
+func GetUserInput() (IPAddress, error, int, int) {
 
 	var err error
 
@@ -67,16 +67,18 @@ func GetUserInput() (IPAddress, error, int) {
 
 	p := flag.String("p", "", "port number: 1-65535")
 	t := flag.Int("t", 3, "timeout duration in second")
+	w := flag.Int("w", 500, "amount of Goroutine workers")
 
 	flag.Parse()
 	args := flag.Args()
 
 	ports := *p
 	timeoutDuration := *t
+	worker := *w
 
 	if len(args) < 1 || ports == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
-		return IPAddress{}, err, timeoutDuration
+		return IPAddress{}, err, timeoutDuration, worker
 	} //first debugging without AI that I ever done!
 
 	var userInput IPAddress
@@ -90,7 +92,7 @@ func GetUserInput() (IPAddress, error, int) {
 		if strings.Contains(strPort, "-") { // if the input is parser(1-12), return []int
 			parser, err = strParser(strPort)
 			if err != nil {
-				return IPAddress{}, err, timeoutDuration
+				return IPAddress{}, err, timeoutDuration, worker
 			}
 			for _, i := range parser {
 				userInput.port = append(userInput.port, i)
@@ -100,7 +102,7 @@ func GetUserInput() (IPAddress, error, int) {
 
 		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
-			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort), timeoutDuration
+			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort), timeoutDuration, worker
 		}
 
 		//Port is integer now
@@ -108,7 +110,7 @@ func GetUserInput() (IPAddress, error, int) {
 		userInput.port = append(userInput.port, intPort)
 
 	}
-	return userInput, err, timeoutDuration
+	return userInput, err, timeoutDuration, worker
 }
 
 func strParser(strPortUserInput string) ([]int, error) {
@@ -155,12 +157,12 @@ type scanResult struct {
 	Result bool
 }
 
-func ScannerDoor(target IPAddress, timeoutDuration int) ([]int, []int, error) {
+func ScannerDoor(target IPAddress, timeoutDuration int, worker int) ([]int, []int, error) {
 	var err error
 	var wg sync.WaitGroup
 	ch := make(chan scanResult)
 
-	limit := make(chan bool, 500)
+	limit := make(chan bool, worker)
 
 	openPort := []int{}
 	closePort := []int{}
