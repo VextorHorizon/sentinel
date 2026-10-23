@@ -13,9 +13,8 @@ import (
 )
 
 /* Future:
-- Limits goroutine only 500 workers to work, tomorrow - I'm too sleepy today, I can't handle it. Quite sad
 
-*/
+ */
 
 type IPAddress struct {
 	ip   string
@@ -26,7 +25,7 @@ func main() {
 
 	timeStart := time.Now()
 
-	UserInput, err := GetUserInput()
+	UserInput, err, timeoutDuration := GetUserInput()
 	if err != nil {
 		fmt.Println(err)
 		return
@@ -39,8 +38,8 @@ func main() {
 	var openPort []int
 	var closePort []int
 
-	for _, Host := range IPPack {
-		openPort, closePort, err = ScannerDoor(Host)
+	for _, Host := range IPPack { //Multi Host
+		openPort, closePort, err = ScannerDoor(Host, timeoutDuration)
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -57,21 +56,27 @@ func main() {
 	fmt.Println("This operation took: ", time.Since(timeStart))
 }
 
-func GetUserInput() (IPAddress, error) {
+func GetUserInput() (IPAddress, error, int) {
 
 	var err error
-	// args := os.Args
+
+	/* Flag Argument: go run . -p 3241 192.0.0.1
+	Idex = flag.Args()
+	0 = 192.0.0.1
+	*/
 
 	p := flag.String("p", "", "port number: 1-65535")
+	t := flag.Int("t", 3, "timeout duration in second")
 
 	flag.Parse()
 	args := flag.Args()
 
 	ports := *p
+	timeoutDuration := *t
 
 	if len(args) < 1 || ports == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
-		return IPAddress{}, err
+		return IPAddress{}, err, timeoutDuration
 	} //first debugging without AI that I ever done!
 
 	var userInput IPAddress
@@ -85,7 +90,7 @@ func GetUserInput() (IPAddress, error) {
 		if strings.Contains(strPort, "-") { // if the input is parser(1-12), return []int
 			parser, err = strParser(strPort)
 			if err != nil {
-				return IPAddress{}, err
+				return IPAddress{}, err, timeoutDuration
 			}
 			for _, i := range parser {
 				userInput.port = append(userInput.port, i)
@@ -95,7 +100,7 @@ func GetUserInput() (IPAddress, error) {
 
 		intPort, err := strconv.Atoi(strPort)
 		if err != nil {
-			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort)
+			return IPAddress{}, fmt.Errorf("Invalid port: %s", strPort), timeoutDuration
 		}
 
 		//Port is integer now
@@ -103,7 +108,7 @@ func GetUserInput() (IPAddress, error) {
 		userInput.port = append(userInput.port, intPort)
 
 	}
-	return userInput, err
+	return userInput, err, timeoutDuration
 }
 
 func strParser(strPortUserInput string) ([]int, error) {
@@ -150,7 +155,7 @@ type scanResult struct {
 	Result bool
 }
 
-func ScannerDoor(target IPAddress) ([]int, []int, error) {
+func ScannerDoor(target IPAddress, timeoutDuration int) ([]int, []int, error) {
 	var err error
 	var wg sync.WaitGroup
 	ch := make(chan scanResult)
@@ -169,8 +174,8 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 		limit <- true
 
 		host := target.ip + ":" + strconv.Itoa(port) // String | Itoa = Integer to ASCII
-		wg.Add(1)                                    // future: need to set boundary, not to have that many worker (if user scan 60000 port, We not going to let goroutine spawn for 60000 workers)
-		go portScanner(host, ch, port, &wg, limit)   // wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
+		wg.Add(1)
+		go portScanner(host, ch, port, &wg, limit, timeoutDuration) // wg need to be chagning a real value number of wg in global (point to change in real one, not copy)
 
 	}
 
@@ -192,18 +197,17 @@ func ScannerDoor(target IPAddress) ([]int, []int, error) {
 		if result.Result == true {
 			openPort = append(openPort, result.Port)
 		}
-	} // future we need to arranging from smallest to largest
+	}
 
 	return openPort, closePort, err
 }
 
 // finished feat Concurrency feature. It took me for 4 days to learn about *channel*, sync.WaitGroup and complete mental model of GOROUTINE
 
-func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup, limit chan bool) {
+func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup, limit chan bool, timeoutDuration int) {
 
 	defer wg.Done()
-
-	conn, err := net.DialTimeout("tcp", host, 3*time.Second)
+	conn, err := net.DialTimeout("tcp", host, time.Duration(timeoutDuration)*time.Second)
 	<-limit
 	if err != nil { //Connection unsuccess
 		ch <- scanResult{
