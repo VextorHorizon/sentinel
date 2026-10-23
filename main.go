@@ -84,6 +84,10 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	worker := *w
 	openportCommand := *o
 
+	if worker == 0 {
+		worker = 1
+	}
+
 	if len(args) < 1 || ports == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
 		return IPAddress{}, err, timeoutDuration, worker, openportCommand
