@@ -50,8 +50,6 @@ func main() {
 	for _, port := range openPort {
 		fmt.Printf("%d             open\n", port)
 	}
-	if openportCommand == true {
-	}
 
 	if openportCommand == false {
 		for _, port := range closePort {
@@ -223,20 +221,20 @@ func portScanner(host string, ch chan scanResult, port int, wg *sync.WaitGroup, 
 	defer wg.Done()
 	conn, err := net.DialTimeout("tcp", host, time.Duration(timeoutDuration)*time.Second)
 	<-limit
-	if err != nil { //Connection unsuccess
+
+	switch {
+	case err != nil:
 		ch <- scanResult{
 			Port:   port,
 			Result: false,
 		}
 
-	}
-	if conn != nil { //Connection success
+	case conn != nil:
 		conn.Close()
 		ch <- scanResult{
 			Port:   port,
 			Result: true,
 		}
-
 	}
 
 }
