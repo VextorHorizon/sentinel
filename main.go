@@ -13,8 +13,8 @@ import (
 )
 
 /* Future:
-
- */
+Refactor: strParser variale name. It freaking hard to read, and point out(comment) what variale is holding
+*/
 
 type IPAddress struct {
 	ip   string
