@@ -125,37 +125,37 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	return userInput, err, timeoutDuration, worker, openportCommand
 }
 
-func strParser(strPortUserInput string) ([]int, error) {
+func strParser(PortUserInputRange string) ([]int, error) {
 	var err error
-	var parser []int
+	var rawNumber []int
 
-	strParser := strCutParser(strPortUserInput) // ["1" "12"]
-	for _, singleStr := range strParser {
-		singleInt, err := strconv.Atoi(singleStr) // convert string to int 1, 12
+	rangeTwoNumber := strCutParser(PortUserInputRange) // ["1" "12"]
+	for _, strOneNumber := range rangeTwoNumber {
+		intOneNumber, err := strconv.Atoi(strOneNumber) // convert string to int 1, 12
 		if err != nil {
-			return nil, fmt.Errorf("Invalid port range format: %s", singleStr)
+			return nil, fmt.Errorf("Invalid port range format: %s", strOneNumber)
 		}
-		parser = append(parser, singleInt) // put int to parser[]
+		rawNumber = append(rawNumber, intOneNumber) // put int to parser[]
 	}
 
-	if len(parser) > 2 { // validate if input is more than just two number for parser
-		return nil, fmt.Errorf("Invalid port range: %d", parser) // not to let range to belike: 80-100-120
+	if len(rawNumber) > 2 { // validate if input is more than just two number for parser
+		return nil, fmt.Errorf("Invalid port range: %d", rawNumber) // not to let range to belike: 80-100-120
 	}
-	if parser[0] >= parser[1] {
-		if parser[0] == parser[1] {
-			return nil, fmt.Errorf("Invalid parser format(%d)", parser[0])
+	if rawNumber[0] >= rawNumber[1] {
+		if rawNumber[0] == rawNumber[1] {
+			return nil, fmt.Errorf("Invalid parser format(%d)", rawNumber[0])
 		}
 		return nil, fmt.Errorf("Invalid parser format(%d-%d) to (%d-%d)?",
-			parser[0], parser[1],
-			parser[1], parser[0])
+			rawNumber[0], rawNumber[1],
+			rawNumber[1], rawNumber[0])
 	}
 	// parser[1] += 1 //as parser[1] normally it be -1 IDK WHY // I know it now
-	var finishParser []int
-	for i := parser[0]; i <= parser[1]; i++ {
-		finishParser = append(finishParser, i)
+	var finishedRangeNumber []int
+	for i := rawNumber[0]; i <= rawNumber[1]; i++ {
+		finishedRangeNumber = append(finishedRangeNumber, i)
 
 	}
-	return finishParser, err //[1 2 3 4 5 6]
+	return finishedRangeNumber, err //[1 2 3 4 5 6]
 }
 
 func strCutParser(strCut string) []string {
