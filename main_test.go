@@ -5,6 +5,6 @@ import (
 )
 
 func TestStrParser(t *testing.T) {
-	got, err := strParser("1-3")
+	got, err := strParser("1")
 	t.Log(got, err)
 }

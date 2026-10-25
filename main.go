@@ -135,10 +135,14 @@ func strParser(PortUserInputRange string) ([]int, error) {
 		if err != nil {
 			return nil, fmt.Errorf("Invalid port range format: %s", strOneNumber)
 		}
-		rawNumbers = append(rawNumbers, intOneNumber) // put int to parser[]
+		rawNumbers = append(rawNumbers, intOneNumber) // put int to rawNumbers[]
 	}
 
-	if len(rawNumbers) > 2 { // validate if input is more than just two number for parser
+	if rawNumbers[1] > 65535 {
+		return nil, fmt.Errorf("Reject %d, Port must between 1 and 65535", rawNumbers[1])
+	}
+
+	if len(rawNumbers) > 2 || len(rawNumbers) < 2 { // validate if input is more than just two number for parser
 		return nil, fmt.Errorf("Invalid port range: %d", rawNumbers) // not to let range to belike: 80-100-120
 	}
 	if rawNumbers[0] >= rawNumbers[1] {
