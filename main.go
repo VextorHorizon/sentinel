@@ -94,11 +94,12 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 
 	var userInput IPAddress
 	userInput.ip = args[0]
-	//userInputports = [1,2,3,4,5 7,8,9,6,5] string slice
-	// strPort = [1 2 3 4 5 7 8 9 6 5]
+	//ports = [1,2,3,4,5 7,8,9,6,5] string slice
+	// userInputports = [1 2 3 4 5 7 8 9 6 5]
 	userInputports := strings.Split(ports, ",")
+
 	var parser []int
-	for _, strPort := range userInputports {
+	for _, strPort := range userInputports { //range of ["1" "2" "3" "4" "5-7" "8" "9"]
 		//str Port that is still String type
 		if strings.Contains(strPort, "-") { // if the input is parser(1-12), return []int
 			parser, err = strParser(strPort)
@@ -127,9 +128,10 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 func strParser(strPortUserInput string) ([]int, error) {
 	var err error
 	var parser []int
-	strParser := strCutParser(strPortUserInput) // [1 12]
+
+	strParser := strCutParser(strPortUserInput) // ["1" "12"]
 	for _, singleStr := range strParser {
-		singleInt, err := strconv.Atoi(singleStr)
+		singleInt, err := strconv.Atoi(singleStr) // convert string to int 1, 12
 		if err != nil {
 			return nil, fmt.Errorf("Invalid port range format: %s", singleStr)
 		}
@@ -137,7 +139,7 @@ func strParser(strPortUserInput string) ([]int, error) {
 	}
 
 	if len(parser) > 2 { // validate if input is more than just two number for parser
-		return nil, fmt.Errorf("Invalid port range: %d", parser)
+		return nil, fmt.Errorf("Invalid port range: %d", parser) // not to let range to belike: 80-100-120
 	}
 	if parser[0] >= parser[1] {
 		if parser[0] == parser[1] {
@@ -147,9 +149,9 @@ func strParser(strPortUserInput string) ([]int, error) {
 			parser[0], parser[1],
 			parser[1], parser[0])
 	}
-	parser[1] += 1 //as parser[1] normally it be -1 IDK WHY
+	// parser[1] += 1 //as parser[1] normally it be -1 IDK WHY // I know it now
 	var finishParser []int
-	for i := parser[0]; i < parser[1]; i++ {
+	for i := parser[0]; i <= parser[1]; i++ {
 		finishParser = append(finishParser, i)
 
 	}
