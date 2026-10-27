@@ -125,7 +125,7 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	return userInput, err, timeoutDuration, worker, openportCommand
 }
 
-func strParser(PortUserInputRange string) ([]int, error) {
+func strParser(PortUserInputRange string) ([]int, error) { // This function is working for cutting (-) and parser
 	var err error
 	var rawNumbers []int
 
