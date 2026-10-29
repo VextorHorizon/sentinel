@@ -82,7 +82,7 @@ Planned improvements include:
 - Remove hard-coded development targets [x]
 - Scan multiple ports [x]
 - Parser range input [x]
-- Scan multiple hosts [x]
+- Scan multiple hosts [] (v0.2)
 - Add configurable connection timeout[x]
 - Add concurrent scanning with goroutines [x]
 - Improve error handling and input validation 
