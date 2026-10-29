@@ -73,16 +73,20 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	flag.Parse()
 	args := flag.Args()
 
-	ports := *p
+	portsUserInput := *p
 	timeoutDuration := *t
 	worker := *w
 	openportCommand := *o
 
 	if worker == 0 {
-		worker = 1
+		worker = 500
 	}
 
-	if len(args) < 1 || ports == "" {
+	if timeoutDuration == 0 {
+		timeoutDuration = 3
+	}
+
+	if len(args) < 1 || portsUserInput == "" {
 		err = errors.New("Error, need format: sentinel <option> <port> <ip>")
 		return IPAddress{}, err, timeoutDuration, worker, openportCommand
 	} //first debugging without AI that I ever done!
@@ -91,7 +95,7 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	userInput.ip = args[0]
 	//ports = [1,2,3,4,5 7,8,9,6,5] string slice
 	// userInputports = [1 2 3 4 5 7 8 9 6 5]
-	userInputports := strings.Split(ports, ",")
+	userInputports := strings.Split(portsUserInput, ",")
 
 	var parser []int
 	for _, strPort := range userInputports { //range of ["1" "2" "3" "4" "5-7" "8" "9"]
