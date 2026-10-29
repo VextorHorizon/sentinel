@@ -14,6 +14,16 @@ func TestStrParser(t *testing.T) {
 
 	}
 
-	t.Log(got, want, err)
+	got, err = strParser("abc")
+	if err == nil {
+		t.Error("Error, input is string but it can pass through the process")
+	}
+
+	got, err = strParser("200-80")
+	if err == nil {
+		t.Error("Error, reverse range can pass through the process")
+	}
+
+	t.Log(got, want)
 
 }
