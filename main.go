@@ -126,6 +126,10 @@ func strParser(PortUserInputRange string) ([]int, error) { // This function is w
 
 	rangeTwoNumbers := strCutParser(PortUserInputRange) // ["1" "12"]
 	for _, strOneNumber := range rangeTwoNumbers {
+
+		if strOneNumber == "" {
+			return nil, fmt.Errorf("Invalid port range format")
+		}
 		intOneNumber, err := strconv.Atoi(strOneNumber) // convert string to int 1, 12
 		if err != nil {
 			return nil, fmt.Errorf("Invalid port range format: %s", strOneNumber)
