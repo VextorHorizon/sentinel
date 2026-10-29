@@ -4,7 +4,7 @@ A lightweight TCP network scanner written in Go.
 
 Sentinel is a learning-focused project built to explore low-level networking, CLI development, and eventually concurrency in Go.
 
-> **Current version:** `v0.0.9`  
+> **Current version:** `v0.1.0`  
 > Sentinel is still in development as learning project.
 
 ## Current Features
@@ -95,6 +95,6 @@ Long-term, the goal is to evolve Sentinel from a simple TCP connection checker i
 
 ## Status
 
-Early development / learning project.
+Stable v0.1.0 version and still in development / learning project.
 
 Expect breaking changes as the architecture evolves.
