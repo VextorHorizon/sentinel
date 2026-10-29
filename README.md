@@ -9,10 +9,9 @@ Sentinel is a learning-focused project built to explore low-level networking, CL
 
 ## Current Features
 
-- Scan TCP port on an IPv4 address
+- Scan TCP ports on an IPv4 address
 - Accept a target IP and port from command-line arguments
 - Detect whether a TCP connection can be established
-- Scan multiple targets sequentially
 - Basic input validation for CLI arguments
 
 ## Usage
