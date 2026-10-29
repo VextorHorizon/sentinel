@@ -70,10 +70,6 @@ Scanner(target IPAddress)
 
 The scanner builds an `IP:PORT` address and attempts a TCP connection using Go's `net` package.
 
-At the moment, targets are scanned **sequentially**, meaning a slow connection attempt can delay every target after it.
-
-The current development build also contains several hard-coded targets used for testing alongside the target supplied through the CLI.
-
 ## Roadmap
 
 Planned improvements include:
