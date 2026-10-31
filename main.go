@@ -78,7 +78,7 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 	worker := *w
 	openportCommand := *o
 
-	if worker == 0 {
+	if worker <= 0 {
 		worker = 500
 	}
 
