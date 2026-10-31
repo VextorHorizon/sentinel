@@ -82,7 +82,7 @@ func GetUserInput() (IPAddress, error, int, int, bool) {
 		worker = 500
 	}
 
-	if timeoutDuration == 0 {
+	if timeoutDuration <= 0 {
 		timeoutDuration = 3
 	}
 
